@@ -1,91 +1,81 @@
-import Image from 'next/image'
-import { Inter } from 'next/font/google'
-import styles from './page.module.css'
-
-const inter = Inter({ subsets: ['latin'] })
+"use client";
+import { ChangeEvent, useState, useEffect } from "react";
 
 export default function Home() {
+  const [count, setCount] = useState(0);
+  const [maxCount, setMaxCount] = useState(0);
+  const [showError, setShowError] = useState(false);
+
+  const changeCount = (type: "inc" | "dec") => {
+    if (type === "inc" ) {
+      if (count === maxCount) {
+        setShowError(true);
+        showAlert();
+      } else {
+        setCount((currentCount) => currentCount + 1);
+      }
+    }
+
+    if (type === "dec" && count>0) {
+      setCount((currentCount) => currentCount - 1);
+    }
+  };
+
+  const handleMaxCount = (e: ChangeEvent<HTMLInputElement>) => {
+    if (isNaN(+e.target.value)) {
+      setMaxCount(0);
+    } else {
+      setMaxCount(parseInt(e.target.value));
+    }
+  };
+
+  const showAlert = () => {
+    setTimeout(() => {
+      setShowError(false);
+    }, 4000);
+  };
+
   return (
-    <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>app/page.tsx</code>
-        </p>
-        <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{' '}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
+    <div className="flex flex-col w-100 h-screen m-4 justify-center items-center">
+      <h1 className="text-3xl text-amber-800 font-bold underlined">Counter</h1>
+      <p className="text-5xl text-stone-800 font-bold mt-4 mb-4">{count}</p>
+      <div>
+        <button
+          onClick={() => changeCount("inc")}
+          className="w-24 h-12 rounded border-2 bg-orange-600 hover:bg-orange-700 text-3xl font-bold m-4 text-white active:animate-pulse"
+        >
+          +
+        </button>
+        <button
+          onClick={() => changeCount("dec")}
+          className="w-24 h-12 rounded border-2 bg-green-500 hover:bg-green-700 text-3xl font-bold m-4 text-white active:animate-pulse"
+        >
+          -
+        </button>
       </div>
-
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
+      <button
+        onClick={() => {
+          setCount(0);
+          setMaxCount(0);
+        }}
+        className="w-24 h-12 rounded border-2 bg-sky-500 hover:bg-sky-700 text-xl font-bold m-4 text-white active:animate-pulse"
+      >
+        Reset
+      </button>
+      <div className="m-4">
+        <span>Max Count: </span>
+        <input
+          type="number"
+          value={maxCount}
+          onChange={handleMaxCount}
+          className="w-32 h-8 rounded border-2"
         />
-        <div className={styles.thirteen}>
-          <Image src="/thirteen.svg" alt="13" width={40} height={31} priority />
+      </div>
+      {showError && (
+        <div className="m-4 border-2 rounded-lg bg-red-500 p-2 animate-fade-out">
+          Cannot Exceed Max Count {maxCount}
         </div>
-      </div>
-
-      <div className={styles.grid}>
-        <a
-          href="https://beta.nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={inter.className}>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p className={inter.className}>
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={inter.className}>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p className={inter.className}>Explore the Next.js 13 playground.</p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={inter.className}>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p className={inter.className}>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
-  )
+      )}
+    </div>
+  );
 }
